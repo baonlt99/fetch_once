@@ -47,28 +47,28 @@
         window.addEventListener('beforeunload',(e) => {
             let {onLoad,listTabs,count} = JSON.parse(localStorage.getItem('fetch_once')),
                 {indexTab} = JSON.parse(sessionStorage.getItem('indexTab')),
-                isDeleteFetchedTab = false;
+                isDeletedFetchedTab = false;
             listTabs = JSON.parse(listTabs)
             count = +count
             if(count <= 1) {
                 localStorage.removeItem('fetch_once')
             } else if(count > 0) {
                 if(listTabs[indexTab] === true) {
-                    isDeleteFetchedTab = true
+                    isDeletedFetchedTab = true
                 }
                 delete listTabs[indexTab]
                 localStorage.setItem('fetch_once',JSON.stringify({
                     count: count - 1,
                     listTabs: JSON.stringify(listTabs),
-                    isDeleteFetchedTab,
+                    isDeletedFetchedTab,
                 }));
             }
         });
         window.addEventListener('storage',() => {
-            let {count,listTabs,isDeleteFetchedTab} = JSON.parse(localStorage.getItem('fetch_once'));
+            let {count,listTabs,isDeletedFetchedTab} = JSON.parse(localStorage.getItem('fetch_once'));
             let {indexTab} = JSON.parse(sessionStorage.getItem('indexTab'))
             listTabs = JSON.parse(listTabs)
-            if(isDeleteFetchedTab === true) {
+            if(isDeletedFetchedTab === true) {
                 let arr = Object.keys(listTabs)
                 if(+arr[0] === +indexTab) {
                     console.log("Fetch")
@@ -82,7 +82,7 @@
         });
         function render(totaltab,indexTab) {
             let totaltab1 = document.getElementById('totaltab'),
-             indexTab1 = document.getElementById('indexTab');
+                indexTab1 = document.getElementById('indexTab');
             totaltab1.textContent = 'total: ' + totaltab;
             indexTab1.textContent = indexTab
         }
