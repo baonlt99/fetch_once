@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+</head>
+
+<body>
+    <div style="width: 100%; height: 100%; text-align: center">
+        <button onclick=" function clear(){
+            localStorage.clear()
+            sessionStorage.clear()
+        }; clear()">Clear</button>
+        <h1 id="totaltab">0</h1>
+        <h1 id="indexTab"></h1>
+    </div>
+
+    <script>
+        window.addEventListener('load',() => {
+            let numTabs = null
+            let local = localStorage.getItem('fetch_once'),
+                indexTab = Date.now(),
+                listTabs = {}
+            if(local === null) {
+                console.log("Fetch")
+                localStorage.setItem('fetch_once',JSON.stringify({
+                    count: 1,
+                    listTabs: JSON.stringify({[indexTab]: true}),
+                }));
+                numTabs = 1
+            } else {
+                let {listTabs,count} = JSON.parse(local);
+                listTabs = JSON.parse(listTabs)
+                listTabs[indexTab] = false
+                localStorage.setItem('fetch_once',JSON.stringify({
+                    count: +count + 1,
+                    listTabs: JSON.stringify(listTabs),
+                }));
+                numTabs = +count + 1
+            }
+            sessionStorage.setItem('indexTab',JSON.stringify({indexTab}));
+            render(numTabs,indexTab)
+        });
+        window.addEventListener('beforeunload',(e) => {
+            let {onLoad,listTabs,count} = JSON.parse(localStorage.getItem('fetch_once')),
+                {indexTab} = JSON.parse(sessionStorage.getItem('indexTab')),
+                isDeleteFetchedTab = false;
+            listTabs = JSON.parse(listTabs)
+            count = +count
+            if(count <= 1) {
+                localStorage.removeItem('fetch_once')
+            } else if(count > 0) {
+                if(listTabs[indexTab] === true) {
+                    isDeleteFetchedTab = true
+                }
+                delete listTabs[indexTab]
+                localStorage.setItem('fetch_once',JSON.stringify({
+                    count: count - 1,
+                    listTabs: JSON.stringify(listTabs),
+                    isDeleteFetchedTab,
+                }));
+            }
+        });
+        window.addEventListener('storage',() => {
+            let {count,listTabs,isDeleteFetchedTab} = JSON.parse(localStorage.getItem('fetch_once'));
+            let {indexTab} = JSON.parse(sessionStorage.getItem('indexTab'))
+            listTabs = JSON.parse(listTabs)
+            if(isDeleteFetchedTab === true) {
+                let arr = Object.keys(listTabs)
+                if(+arr[0] === +indexTab) {
+                    console.log("Fetch")
+                    listTabs[indexTab] = true
+                    localStorage.setItem('fetch_once',JSON.stringify({
+                        count: arr.length,
+                        listTabs: JSON.stringify(listTabs),
+                    }));
+                }
+            }
+        });
+        function render(totaltab,indexTab) {
+            let totaltab1 = document.getElementById('totaltab'),
+             indexTab1 = document.getElementById('indexTab');
+            totaltab1.textContent = 'total: ' + totaltab;
+            indexTab1.textContent = indexTab
+        }
+    </script>
+</body>
+
+</html>
