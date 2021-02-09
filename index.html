@@ -22,8 +22,7 @@
         window.addEventListener('load',() => {
             let numTabs = null
             let local = localStorage.getItem('fetch_once'),
-                indexTab = Date.now(),
-                listTabs = {}
+                indexTab = Date.now()
             if(local === null) {
                 console.log("Fetch")
                 localStorage.setItem('fetch_once',JSON.stringify({
@@ -45,7 +44,7 @@
             render(numTabs,indexTab)
         });
         window.addEventListener('beforeunload',(e) => {
-            let {onLoad,listTabs,count} = JSON.parse(localStorage.getItem('fetch_once')),
+            let {listTabs,count} = JSON.parse(localStorage.getItem('fetch_once')),
                 {indexTab} = JSON.parse(sessionStorage.getItem('indexTab')),
                 isDeletedFetchedTab = false;
             listTabs = JSON.parse(listTabs)
@@ -65,7 +64,7 @@
             }
         });
         window.addEventListener('storage',() => {
-            let {count,listTabs,isDeletedFetchedTab} = JSON.parse(localStorage.getItem('fetch_once'));
+            let {listTabs,isDeletedFetchedTab} = JSON.parse(localStorage.getItem('fetch_once'));
             let {indexTab} = JSON.parse(sessionStorage.getItem('indexTab'))
             listTabs = JSON.parse(listTabs)
             if(isDeletedFetchedTab === true) {
